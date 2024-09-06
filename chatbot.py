@@ -2,7 +2,15 @@
 
 
 """
-This script lays out different methods for ai-chatbot
+This script uses Langchain's methods to build ai-chatbot.
+Steps:  
+1. Create an OpenAI API key and save in a .env file
+2. Uncomment the lines below:
+    # pages = document_loading()
+    # splits = document_splitter(pages)
+    # create_embedding_and_store_in_vector_db(splits[:10])
+3. Uncomment any one of Langchain's retrieval chain methods. Recommended to use the last one.
+4. Then run: python chatbot.py -q "What are main topics for this class?"
 """
 
 import os
@@ -35,9 +43,11 @@ from langchain.chains import ConversationalRetrievalChain
 embedding = OpenAIEmbeddings()
 persist_directory = 'docs/chroma/'
 
+
+"""Loads pdf datasets using Langchain's PyPDFLoader"""
 def document_loading() -> List[Document]:
     # currently only one pdf is available
-    loader = PyPDFLoader("/Users/arushi/Downloads/MachineLearning-Lecture01.pdf")
+    loader = PyPDFLoader("docs/MachineLearning-Lecture01.pdf")
     pages = loader.load()
     #print(len(pages))
     page = pages[0]
@@ -45,6 +55,8 @@ def document_loading() -> List[Document]:
     #print(page.metadata)
     return pages
 
+
+"""Splits the documents using RecursiveCharacterTextSplitter"""
 def document_splitter(pages):
     r_splitter = RecursiveCharacterTextSplitter(
         chunk_size = 1500,
@@ -54,7 +66,9 @@ def document_splitter(pages):
     total_splits = r_splitter.split_documents(pages)
     #print(splits)
     return total_splits
-        
+
+
+"""Creates embedding using OpenAI's Embeddings and store in vector db"""
 def create_embedding_and_store_in_vector_db(splits):
     print(len(splits))
 
@@ -73,14 +87,14 @@ def create_embedding_and_store_in_vector_db(splits):
     except Exception as e:
         print(e)
 
-def qa_retrieval_chain():
+
+"""Langchain's RetrievalQA chain with prompt"""
+def retrieval_qa_chain(question: str):
     llm_name = "gpt-3.5-turbo"
     persist_directory = 'docs/chroma/'
     vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
     
     #print(vectordb._collection.count())
-    
-    question = "What are main topics for this class?"
     docs = vectordb.similarity_search(question,k=3)
     print(docs[0])
 
@@ -93,6 +107,8 @@ def qa_retrieval_chain():
     result = qa_chain({"query": question})
     print(result["result"])
 
+
+"""Langchain's RetrievalQA chain with prompt"""
 def retrieval_qa_chain_with_prompt(question: str):
     
     template = """Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum. Keep the answer as concise as possible. Always say "thanks for asking!" at the end of the answer. 
@@ -113,6 +129,8 @@ def retrieval_qa_chain_with_prompt(question: str):
     result = qa_chain({"query": question})
     print(result["result"])
 
+
+"""Langchain's ConversationalRetrievalChain with memory"""
 def conversational_retrieval_chain_with_memory(question: str):
 
     llm_name = "gpt-3.5-turbo"
@@ -137,12 +155,11 @@ if __name__ == "__main__":
     # pages = document_loading()
     # splits = document_splitter(pages)
     # create_embedding_and_store_in_vector_db(splits[:10])
-    # qa_retrieval_chain()
 
-    # Initialize the ArgumentParser object
     parser = argparse.ArgumentParser(description="Type in your question")
     parser.add_argument('-q', '--question', type=str, required=True, help="Question")
     args = parser.parse_args()
     
-    #retrieval_qa_chain_with_prompt(args.question)
+    # retrieval_qa_chain(args.question)
+    # retrieval_qa_chain_with_prompt(args.question)
     conversational_retrieval_chain_with_memory(args.question)

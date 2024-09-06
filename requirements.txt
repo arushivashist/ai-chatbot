@@ -1,0 +1,12 @@
+chroma-hnswlib==0.7.6
+chromadb==0.5.5
+langchain==0.2.16
+langchain-community==0.2.16
+langchain-core==0.2.38
+langchain-openai==0.1.23
+langchain-text-splitters==0.2.4
+langsmith==0.1.115
+openai==1.43.1
+python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
+tiktoken==0.7.0
