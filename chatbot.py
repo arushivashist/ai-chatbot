@@ -47,7 +47,7 @@ persist_directory = 'docs/chroma/'
 """Loads pdf datasets using Langchain's PyPDFLoader"""
 def document_loading() -> List[Document]:
     # currently only one pdf is available
-    loader = PyPDFLoader("docs/MachineLearning-Lecture01.pdf")
+    loader = PyPDFLoader("dataset/MachineLearning-Lecture01.pdf")
     pages = loader.load()
     #print(len(pages))
     page = pages[0]
@@ -78,10 +78,10 @@ def create_embedding_and_store_in_vector_db(splits):
             embedding=embedding,
             persist_directory=persist_directory
         )
-        print(vectordb._collection.count())
+        #print(vectordb._collection.count())
         question = "is there an email i can ask for help"
         docs = vectordb.similarity_search(question,k=3)
-        print(docs[0].page_content)
+        #print(docs[0].page_content)
         #vectordb.persist() manual call not needed. Automatically persisted
 
     except Exception as e:
@@ -154,12 +154,12 @@ def conversational_retrieval_chain_with_memory(question: str):
 if __name__ == "__main__":
     # pages = document_loading()
     # splits = document_splitter(pages)
-    # create_embedding_and_store_in_vector_db(splits[:10])
+    # create_embedding_and_store_in_vector_db(splits)
 
     parser = argparse.ArgumentParser(description="Type in your question")
     parser.add_argument('-q', '--question', type=str, required=True, help="Question")
     args = parser.parse_args()
-    
+
     # retrieval_qa_chain(args.question)
     # retrieval_qa_chain_with_prompt(args.question)
-    conversational_retrieval_chain_with_memory(args.question)
+    # conversational_retrieval_chain_with_memory(args.question)
