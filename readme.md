@@ -1,4 +1,4 @@
-# Chatbot
+# AI Chatbot
 
 A conversational AI chatbot built using LangChain and OpenAI's llms
 
